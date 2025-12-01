@@ -1,0 +1,9 @@
+{
+  "/(auth)/login/page": "app/(auth)/login/page.js",
+  "/page": "app/page.js",
+  "/admin/kitchen/page": "app/admin/kitchen/page.js",
+  "/superadmin/admins/page": "app/superadmin/admins/page.js",
+  "/superadmin/staff/page": "app/superadmin/staff/page.js",
+  "/kitchen/[branchId]/page": "app/kitchen/[branchId]/page.js",
+  "/kitchen/[branchId]/orders/page": "app/kitchen/[branchId]/orders/page.js"
+}
