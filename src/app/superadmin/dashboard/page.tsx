@@ -63,7 +63,7 @@ export default function SuperadminDashboardPage() {
 
   if (user?.role !== 'ROLE_SUPERADMIN') {
     return (
-      <div className="rounded-lg border border-amber-200 bg-amber-50 px-6 py-4 text-sm text-amber-900">
+      <div className="rounded-xl border border-amber-200 bg-amber-50 px-6 py-4 text-sm text-amber-900">
         Access restricted to SuperAdmin role.
       </div>
     );
@@ -71,7 +71,7 @@ export default function SuperadminDashboardPage() {
 
   if (!user.restaurantId) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-700">
+      <div className="rounded-xl border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-700">
         Your JWT is missing the required restaurant identifier. Please contact support.
       </div>
     );
@@ -79,63 +79,63 @@ export default function SuperadminDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-bold text-slate-900">Restaurant overview</h1>
-        <p className="text-sm text-slate-500">
+      <header className="page-header">
+        <h1 className="page-title">Restaurant overview</h1>
+        <p className="page-subtitle">
           You are managing a single restaurant tenant. All data shown belongs to that restaurant only.
         </p>
       </header>
 
       {state.error ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {state.error}
         </div>
       ) : null}
 
       {state.loading ? (
-        <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
-          Loading restaurant information…
+        <div className="card">
+          <div className="skeleton h-40 w-full"></div>
         </div>
       ) : state.restaurant ? (
-        <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+        <section className="card">
           <div className="flex flex-wrap items-start justify-between gap-6">
-            <div className="space-y-2">
-              <h2 className="text-2xl font-semibold text-slate-900">{state.restaurant.name}</h2>
-              <dl className="grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
+            <div className="space-y-4 flex-1 min-w-[300px]">
+              <h2 className="text-2xl font-bold text-warm-900">{state.restaurant.name}</h2>
+              <dl className="grid gap-4 text-sm text-warm-600 sm:grid-cols-2">
                 <div>
-                  <dt className="text-xs uppercase tracking-wide text-slate-400">Owner SuperAdmin ID</dt>
-                  <dd className="mt-1 text-base text-slate-900">{state.restaurant.ownerSuperAdminId}</dd>
+                  <dt className="text-xs uppercase tracking-wide text-warm-400 font-bold">Owner SuperAdmin ID</dt>
+                  <dd className="mt-1 text-base text-warm-900 font-medium">{state.restaurant.ownerSuperAdminId}</dd>
                 </div>
                 <div>
-                  <dt className="text-xs uppercase tracking-wide text-slate-400">Timezone</dt>
-                  <dd className="mt-1 text-base text-slate-900">{state.restaurant.timezone ?? '—'}</dd>
+                  <dt className="text-xs uppercase tracking-wide text-warm-400 font-bold">Timezone</dt>
+                  <dd className="mt-1 text-base text-warm-900 font-medium">{state.restaurant.timezone ?? '—'}</dd>
                 </div>
                 <div>
-                  <dt className="text-xs uppercase tracking-wide text-slate-400">Currency</dt>
-                  <dd className="mt-1 text-base text-slate-900">{state.restaurant.currency ?? '—'}</dd>
+                  <dt className="text-xs uppercase tracking-wide text-warm-400 font-bold">Currency</dt>
+                  <dd className="mt-1 text-base text-warm-900 font-medium">{state.restaurant.currency ?? '—'}</dd>
                 </div>
                 <div>
-                  <dt className="text-xs uppercase tracking-wide text-slate-400">Settings JSON</dt>
-                  <dd className="mt-1 break-words text-xs text-slate-500">
+                  <dt className="text-xs uppercase tracking-wide text-warm-400 font-bold">Settings JSON</dt>
+                  <dd className="mt-1 break-words text-xs text-warm-500 font-mono bg-warm-50 p-2 rounded">
                     {state.restaurant.settingsJson ? state.restaurant.settingsJson.slice(0, 120) + (state.restaurant.settingsJson.length > 120 ? '…' : '') : '—'}
                   </dd>
                 </div>
               </dl>
             </div>
-            <div className="rounded-lg border border-slate-200 bg-slate-50 px-5 py-4 text-sm text-slate-600">
-              <p className="text-xs uppercase tracking-wide text-slate-400">Branches</p>
-              <p className="mt-2 text-3xl font-bold text-slate-900">{state.branches.length}</p>
-              <p className="mt-1 text-xs text-slate-500">
+            <div className="rounded-xl border border-warm-200 bg-warm-50 px-6 py-5 text-sm text-warm-600 min-w-[200px]">
+              <p className="text-xs uppercase tracking-wide text-warm-400 font-bold">Branches</p>
+              <p className="mt-2 text-4xl font-bold text-primary-600">{state.branches.length}</p>
+              <p className="mt-2 text-xs text-warm-500">
                 {state.branches.length === 1
-                  ? 'There is 1 branch linked to this restaurant.'
-                  : `There are ${state.branches.length} branches linked to this restaurant.`}
+                  ? '1 branch linked'
+                  : `${state.branches.length} branches linked`}
               </p>
             </div>
           </div>
         </section>
       ) : (
-        <div className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
-          Restaurant information is not available.
+        <div className="card">
+          <p className="text-warm-500">Restaurant information is not available.</p>
         </div>
       )}
     </div>

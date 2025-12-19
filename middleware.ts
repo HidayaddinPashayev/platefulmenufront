@@ -11,7 +11,6 @@ const PUBLIC_PATHS = ['/login', '/api/auth/login', '/api/auth/session', '/table'
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('token')?.value;
-
   const isPublicRoute = PUBLIC_PATHS.some((route) => pathname.startsWith(route));
 
   if (!token) {

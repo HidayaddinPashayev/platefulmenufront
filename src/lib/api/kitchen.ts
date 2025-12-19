@@ -1,5 +1,7 @@
 import type { AxiosInstance } from 'axios';
 import type { Order } from '@/types/entities';
+import { USE_MOCK_DATA } from '@/lib/env';
+import { MOCK_ORDERS, getActiveKitchenOrders } from '@/data/mock-data';
 
 /**
  * Get active orders for kitchen (branch-scoped)
@@ -11,18 +13,19 @@ import type { Order } from '@/types/entities';
  * { "requiresPin": true, "message": "PIN authentication required", "branchId": number }
  */
 export const listKitchenOrders = async (api: AxiosInstance, branchId: number): Promise<Order[]> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] listKitchenOrders');
+    return getActiveKitchenOrders().filter(order => order.branchId === branchId);
+  }
   try {
     const { data } = await api.get<Order[]>(`/branches/${branchId}/kitchen/orders`);
     console.log('[listKitchenOrders] Received orders:', data?.length || 0);
     return data ?? [];
   } catch (error: any) {
-    // 401 with requiresPin is expected when no token is present - let it propagate
-    // The calling component will handle showing PIN login
     if (error?.response?.status === 401) {
       const responseData = error.response.data;
       if (responseData?.requiresPin) {
         console.log('[listKitchenOrders] PIN authentication required');
-        // Re-throw with the response data so caller can check requiresPin
         throw error;
       }
     }
@@ -44,6 +47,16 @@ export const listKitchenOrders = async (api: AxiosInstance, branchId: number): P
  * Response: OrderResponseDTO with status updated to PREPARING
  */
 export const acceptOrder = async (api: AxiosInstance, branchId: number, orderId: number): Promise<Order> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] acceptOrder');
+    const order = MOCK_ORDERS.find(o => o.id === orderId);
+    if (order) {
+      order.status = 'PREPARING';
+      order.updatedAt = new Date().toISOString();
+      return order;
+    }
+    throw new Error('Order not found');
+  }
   try {
     console.log('[acceptOrder] Accepting order:', orderId);
     const { data } = await api.post<Order>(`/branches/${branchId}/kitchen/orders/${orderId}/accept`);
@@ -68,6 +81,16 @@ export const acceptOrder = async (api: AxiosInstance, branchId: number, orderId:
  * Response: OrderResponseDTO with status updated to PREPARED_WAITING
  */
 export const markOrderReady = async (api: AxiosInstance, branchId: number, orderId: number): Promise<Order> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] markOrderReady');
+    const order = MOCK_ORDERS.find(o => o.id === orderId);
+    if (order) {
+      order.status = 'PREPARED_WAITING';
+      order.updatedAt = new Date().toISOString();
+      return order;
+    }
+    throw new Error('Order not found');
+  }
   try {
     console.log('[markOrderReady] Marking order as ready:', orderId);
     const { data } = await api.post<Order>(`/branches/${branchId}/kitchen/orders/${orderId}/ready`);
@@ -102,6 +125,18 @@ export const verifyKitchenPin = async (
   branchId: number,
   pin: string
 ): Promise<KdsLoginResponse> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] verifyKitchenPin');
+    // Accept any 6-digit PIN in mock mode
+    if (pin.length === 6 && /^\d+$/.test(pin)) {
+      return {
+        branchId,
+        kdsToken: `mock-kds-token-${branchId}-${Date.now()}`,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+      };
+    }
+    throw new Error('Invalid PIN');
+  }
   try {
     console.log('[verifyKitchenPin] Verifying PIN for branch:', branchId);
     const { data } = await api.post<KdsLoginResponse>(`/branches/${branchId}/kitchen/pin/verify`, { pin });
@@ -137,6 +172,15 @@ export interface KitchenPinInfo {
  * Authorization: ROLE_ADMIN or ROLE_SUPERADMIN (JWT)
  */
 export const getKitchenPinInfo = async (api: AxiosInstance, branchId: number): Promise<KitchenPinInfo> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] getKitchenPinInfo');
+    return {
+      branchId,
+      isSet: true,
+      lastUpdatedAt: new Date().toISOString(),
+      maskedPin: '**1234',
+    };
+  }
   try {
     const { data } = await api.get<KitchenPinInfo>(`/branches/${branchId}/kitchen/pin`);
     return data;
@@ -157,6 +201,17 @@ export const getKitchenPinInfo = async (api: AxiosInstance, branchId: number): P
  * Response: KitchenPinInfo with full PIN included (only time it's returned)
  */
 export const generateKitchenPin = async (api: AxiosInstance, branchId: number): Promise<KitchenPinInfo> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] generateKitchenPin');
+    const pin = String(Math.floor(100000 + Math.random() * 900000));
+    return {
+      branchId,
+      isSet: true,
+      lastUpdatedAt: new Date().toISOString(),
+      maskedPin: `**${pin.slice(-4)}`,
+      pin,
+    };
+  }
   try {
     const { data } = await api.post<KitchenPinInfo>(`/branches/${branchId}/kitchen/pin/generate`);
     return data;
@@ -177,6 +232,15 @@ export const generateKitchenPin = async (api: AxiosInstance, branchId: number): 
  * Request body: { pin: string } (6 digits)
  */
 export const setKitchenPin = async (api: AxiosInstance, branchId: number, pin: string): Promise<KitchenPinInfo> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] setKitchenPin');
+    return {
+      branchId,
+      isSet: true,
+      lastUpdatedAt: new Date().toISOString(),
+      maskedPin: `**${pin.slice(-4)}`,
+    };
+  }
   try {
     const { data } = await api.post<KitchenPinInfo>(`/branches/${branchId}/kitchen/pin`, { pin });
     return data;

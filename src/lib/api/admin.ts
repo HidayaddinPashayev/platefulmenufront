@@ -1,5 +1,7 @@
 import type { AxiosInstance } from 'axios';
 import type { Branch, MenuItem, TableEntity, UserRecord } from '@/types/entities';
+import { USE_MOCK_DATA } from '@/lib/env';
+import { MOCK_BRANCHES, MOCK_STAFF, MOCK_TABLES, MOCK_MENU_ITEMS } from '@/data/mock-data';
 
 export interface StaffCreatePayload {
   email: string;
@@ -33,12 +35,22 @@ export interface TablePayload {
 
 const STAFF_ROLES = new Set(['ROLE_WAITER', 'ROLE_KITCHEN']);
 
-export const getBranch = async (api: AxiosInstance, branchId: number) => {
+export const getBranch = async (api: AxiosInstance, branchId: number): Promise<Branch> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] getBranch');
+    const branch = MOCK_BRANCHES.find(b => b.id === branchId);
+    if (branch) return branch;
+    throw new Error('Branch not found');
+  }
   const { data } = await api.get<Branch>(`/branches/${branchId}`);
   return data;
 };
 
-export const listStaff = async (api: AxiosInstance, branchId: number) => {
+export const listStaff = async (api: AxiosInstance, branchId: number): Promise<UserRecord[]> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] listStaff');
+    return MOCK_STAFF.filter(user => user.branchId === branchId && STAFF_ROLES.has(user.role));
+  }
   const { data } = await api.get<UserRecord[]>('/users', {
     params: { branchId },
   });
@@ -50,7 +62,25 @@ export const createStaff = async (
   restaurantId: number,
   branchId: number,
   payload: StaffCreatePayload
-) => {
+): Promise<UserRecord> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] createStaff');
+    const newStaff: UserRecord = {
+      id: Date.now(),
+      email: payload.email.toLowerCase(),
+      role: payload.role,
+      restaurantId,
+      branchId,
+      fullName: `${payload.firstName || ''} ${payload.lastName || ''}`.trim() || 'New Staff',
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      phoneNumber: payload.phoneNumber,
+      salaryAmount: payload.salaryAmount,
+      salaryPeriod: payload.salaryPeriod,
+    };
+    MOCK_STAFF.push(newStaff);
+    return newStaff;
+  }
   const body: Record<string, unknown> = {
     email: payload.email.toLowerCase(),
     role: payload.role,
@@ -60,46 +90,22 @@ export const createStaff = async (
   if (payload.password) {
     body.password = payload.password;
   }
-  // Name fields - backend expects fullName, not firstName/lastName separately
   if (payload.firstName?.trim() || payload.lastName?.trim()) {
     const firstName = payload.firstName?.trim() || '';
     const lastName = payload.lastName?.trim() || '';
     body.fullName = `${firstName} ${lastName}`.trim();
-    console.log('[createStaff] Sending name fields:', {
-      firstName: payload.firstName,
-      lastName: payload.lastName,
-      fullName: body.fullName,
-    });
   }
-  // Required fields for staff members
   if (payload.phoneNumber !== undefined && payload.phoneNumber !== null) {
     body.phoneNumber = payload.phoneNumber;
   }
   if (payload.salaryAmount !== undefined && payload.salaryAmount !== null) {
-    // Ensure salaryAmount is sent as a number (float/double), not BigDecimal
     body.salaryAmount = Number(payload.salaryAmount);
   }
   if (payload.salaryPeriod !== undefined && payload.salaryPeriod !== null) {
     body.salaryPeriod = payload.salaryPeriod;
   }
   
-  console.log('[createStaff] Complete request body being sent to backend:', JSON.stringify(body, null, 2));
-  
   const { data } = await api.post<UserRecord>('/users', body);
-  
-  console.log('[createStaff] Response from backend:', {
-    id: data.id,
-    email: data.email,
-    fullName: data.fullName,
-    firstName: data.firstName,
-    lastName: data.lastName,
-    phone: data.phone,
-    phoneNumber: data.phoneNumber,
-    salaryAmount: data.salaryAmount,
-    salaryPeriod: data.salaryPeriod,
-    allKeys: Object.keys(data),
-  });
-  
   return data;
 };
 
@@ -107,7 +113,25 @@ export const updateStaff = async (
   api: AxiosInstance,
   email: string,
   payload: StaffUpdatePayload
-) => {
+): Promise<UserRecord> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] updateStaff');
+    const staff = MOCK_STAFF.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (staff) {
+      if (payload.role) staff.role = payload.role;
+      if (payload.firstName) staff.firstName = payload.firstName;
+      if (payload.lastName) staff.lastName = payload.lastName;
+      if (payload.firstName || payload.lastName) {
+        staff.fullName = `${payload.firstName || staff.firstName || ''} ${payload.lastName || staff.lastName || ''}`.trim();
+      }
+      if (payload.phoneNumber !== undefined) staff.phoneNumber = payload.phoneNumber;
+      if (payload.salaryAmount !== undefined) staff.salaryAmount = payload.salaryAmount;
+      if (payload.salaryPeriod !== undefined) staff.salaryPeriod = payload.salaryPeriod;
+      if (payload.branchId !== undefined) staff.branchId = payload.branchId;
+      return staff;
+    }
+    throw new Error('Staff not found');
+  }
   const body: Record<string, unknown> = {};
   
   if (payload.role) {
@@ -116,20 +140,15 @@ export const updateStaff = async (
   if (payload.password) {
     body.password = payload.password;
   }
-  // Name fields - backend supports both fullName and firstName/lastName
-  // According to API docs: server derives fullName when both firstName/lastName are provided
-  // We'll send firstName/lastName separately to let backend handle it, or fullName if only one is provided
   if (payload.firstName !== undefined || payload.lastName !== undefined) {
     const firstName = payload.firstName?.trim() || '';
     const lastName = payload.lastName?.trim() || '';
-    // Send both fields separately - backend will derive fullName automatically
     if (firstName) {
       body.firstName = firstName;
     }
     if (lastName) {
       body.lastName = lastName;
     }
-    // Also send fullName as fallback (backend accepts either approach)
     if (firstName || lastName) {
       body.fullName = `${firstName} ${lastName}`.trim();
     }
@@ -147,33 +166,25 @@ export const updateStaff = async (
     body.branchId = payload.branchId;
   }
   
-  console.log('[updateStaff] Sending update request:', {
-    email: email.toLowerCase(),
-    url: `/users/${encodeURIComponent(email.toLowerCase())}`,
-    body: JSON.stringify(body, null, 2),
-  });
-  
-  try {
-    const { data } = await api.patch<UserRecord>(`/users/${encodeURIComponent(email.toLowerCase())}`, body);
-    console.log('[updateStaff] Update successful:', data);
-    return data;
-  } catch (error: any) {
-    console.error('[updateStaff] Update failed:', {
-      status: error?.response?.status,
-      statusText: error?.response?.statusText,
-      data: error?.response?.data,
-      message: error?.message,
-      requestBody: body,
-    });
-    throw error;
-  }
+  const { data } = await api.patch<UserRecord>(`/users/${encodeURIComponent(email.toLowerCase())}`, body);
+  return data;
 };
 
-export const deleteStaff = async (api: AxiosInstance, email: string) => {
+export const deleteStaff = async (api: AxiosInstance, email: string): Promise<void> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] deleteStaff');
+    const index = MOCK_STAFF.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+    if (index !== -1) MOCK_STAFF.splice(index, 1);
+    return;
+  }
   await api.delete(`/users/${encodeURIComponent(email.toLowerCase())}`);
 };
 
-export const listTables = async (api: AxiosInstance, restaurantId: number, branchId: number) => {
+export const listTables = async (api: AxiosInstance, restaurantId: number, branchId: number): Promise<TableEntity[]> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] listTables');
+    return MOCK_TABLES.filter(table => table.branchId === branchId);
+  }
   const { data } = await api.get<TableEntity[]>('/tables', {
     params: { restId: restaurantId },
   });
@@ -185,7 +196,22 @@ export const createTable = async (
   restaurantId: number,
   branchId: number,
   payload: TablePayload
-) => {
+): Promise<TableEntity> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] createTable');
+    const newTable: TableEntity = {
+      id: Date.now(),
+      restaurantId,
+      branchId,
+      name: payload.name ?? 'New Table',
+      tableNumber: payload.tableNumber ?? null,
+      seatCount: payload.seatCount ?? null,
+      active: true,
+      qrCode: `QR-${Date.now()}`,
+    };
+    MOCK_TABLES.push(newTable);
+    return newTable;
+  }
   const { data } = await api.post<TableEntity>('/tables', {
     restaurantId,
     branchId,
@@ -200,7 +226,18 @@ export const updateTable = async (
   api: AxiosInstance,
   tableId: number,
   payload: TablePayload
-) => {
+): Promise<TableEntity> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] updateTable');
+    const table = MOCK_TABLES.find(t => t.id === tableId);
+    if (table) {
+      if (payload.name !== undefined) table.name = payload.name ?? '';
+      if (payload.tableNumber !== undefined) table.tableNumber = payload.tableNumber;
+      if (payload.seatCount !== undefined) table.seatCount = payload.seatCount;
+      return table;
+    }
+    throw new Error('Table not found');
+  }
   const body: Record<string, unknown> = {
     name: payload.name ?? '',
     tableNumber: payload.tableNumber ?? null,
@@ -216,11 +253,21 @@ export const updateTable = async (
   return data;
 };
 
-export const deleteTable = async (api: AxiosInstance, tableId: number) => {
+export const deleteTable = async (api: AxiosInstance, tableId: number): Promise<void> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] deleteTable');
+    const index = MOCK_TABLES.findIndex(t => t.id === tableId);
+    if (index !== -1) MOCK_TABLES.splice(index, 1);
+    return;
+  }
   await api.delete(`/tables/${tableId}`);
 };
 
-export const listMenuItems = async (api: AxiosInstance, restaurantId: number) => {
+export const listMenuItems = async (api: AxiosInstance, restaurantId: number): Promise<MenuItem[]> => {
+  if (USE_MOCK_DATA) {
+    console.log('[Mock] listMenuItems');
+    return MOCK_MENU_ITEMS.filter(item => item.restaurantId === restaurantId);
+  }
   const { data } = await api.get<MenuItem[]>('/menu/admin/all', {
     params: { restId: restaurantId },
   });

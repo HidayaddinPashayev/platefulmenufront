@@ -11,16 +11,6 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/kitchen/[branchId]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/kitchen/[branchId]/page.js"
-    ],
-    "/kitchen/[branchId]/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/kitchen/[branchId]/layout.js"
-    ],
     "/(auth)/login/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -56,45 +46,30 @@
       "static/chunks/main-app.js",
       "static/chunks/app/admin/kitchen/page.js"
     ],
-    "/superadmin/dashboard/page": [
+    "/scan/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/superadmin/dashboard/page.js"
+      "static/chunks/app/scan/page.js"
     ],
-    "/superadmin/layout": [
+    "/customer/menu/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/superadmin/layout.js"
+      "static/chunks/app/customer/menu/page.js"
     ],
-    "/superadmin/branches/page": [
+    "/customer/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/superadmin/branches/page.js"
+      "static/chunks/app/customer/layout.js"
     ],
-    "/superadmin/admins/page": [
+    "/customer/cart/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/superadmin/admins/page.js"
+      "static/chunks/app/customer/cart/page.js"
     ],
-    "/superadmin/staff/page": [
+    "/customer/order-success/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/superadmin/staff/page.js"
-    ],
-    "/kitchen/[branchId]/orders/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/kitchen/[branchId]/orders/page.js"
-    ],
-    "/kitchen/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/kitchen/layout.js"
-    ],
-    "/_not-found/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/chunks/app/customer/order-success/page.js"
     ]
   }
 }

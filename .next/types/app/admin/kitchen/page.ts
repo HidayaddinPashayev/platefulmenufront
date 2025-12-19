@@ -1,4 +1,4 @@
-// File: C:\Users\Hidayaddin\Desktop\platefulmenufront\src\app\admin\kitchen\page.tsx
+// File: C:\Users\ismayila\platefulmenufront\src\app\admin\kitchen\page.tsx
 import * as entry from '../../../../../src/app/admin/kitchen/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

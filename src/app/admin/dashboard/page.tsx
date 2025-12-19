@@ -103,7 +103,7 @@ export default function AdminDashboardPage() {
 
   if (user?.role !== 'ROLE_ADMIN') {
     return (
-      <div className="rounded-lg border border-amber-200 bg-amber-50 px-6 py-4 text-sm text-amber-900">
+      <div className="rounded-xl border border-amber-200 bg-amber-50 px-6 py-4 text-sm text-amber-900">
         Access restricted to Admin role.
       </div>
     );
@@ -111,7 +111,7 @@ export default function AdminDashboardPage() {
 
   if (!user.branchId || !user.restaurantId) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-700">
+      <div className="rounded-xl border border-red-200 bg-red-50 px-6 py-4 text-sm text-red-700">
         Your administrator profile is missing a branch assignment. Please contact your SuperAdmin.
       </div>
     );
@@ -119,15 +119,15 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <header className="space-y-2">
-        <h1 className="text-3xl font-bold text-slate-900">Branch overview</h1>
-        <p className="text-sm text-slate-500">
+      <header className="page-header">
+        <h1 className="page-title">Branch overview</h1>
+        <p className="page-subtitle">
           Review key details for your assigned branch. All metrics are scoped to your branch only.
         </p>
       </header>
 
       {state.error ? (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {state.error}
         </div>
       ) : null}
@@ -139,52 +139,57 @@ export default function AdminDashboardPage() {
         <StatCard label="Menu items" value={stats.menuCount} loading={state.loading} />
       </section>
 
-      <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-800">Branch details</h2>
+      <section className="card">
+        <h2 className="section-title">Branch details</h2>
         {state.loading ? (
-          <p className="mt-3 text-sm text-slate-500">Loading branch information…</p>
+          <div className="skeleton h-20 w-full"></div>
         ) : state.branch ? (
-          <dl className="mt-4 grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
+          <dl className="mt-4 grid gap-4 text-sm text-warm-600 sm:grid-cols-2">
             <div>
-              <dt className="text-xs uppercase tracking-wide text-slate-400">Branch name</dt>
-              <dd className="mt-1 text-base text-slate-900">{state.branch.name}</dd>
+              <dt className="text-xs uppercase tracking-wide text-warm-400 font-bold">Branch name</dt>
+              <dd className="mt-1 text-base text-warm-900 font-medium">{state.branch.name}</dd>
             </div>
             <div>
-              <dt className="text-xs uppercase tracking-wide text-slate-400">Branch ID</dt>
-              <dd className="mt-1 text-base text-slate-900">{state.branch.id}</dd>
+              <dt className="text-xs uppercase tracking-wide text-warm-400 font-bold">Branch ID</dt>
+              <dd className="mt-1 text-base text-warm-900 font-medium">{state.branch.id}</dd>
             </div>
             <div>
-              <dt className="text-xs uppercase tracking-wide text-slate-400">Restaurant ID</dt>
-              <dd className="mt-1 text-base text-slate-900">{state.branch.restaurantId}</dd>
+              <dt className="text-xs uppercase tracking-wide text-warm-400 font-bold">Restaurant ID</dt>
+              <dd className="mt-1 text-base text-warm-900 font-medium">{state.branch.restaurantId}</dd>
             </div>
             <div>
-              <dt className="text-xs uppercase tracking-wide text-slate-400">Assigned admin ID</dt>
-              <dd className="mt-1 text-base text-slate-900">{state.branch.adminUserId ?? 'You'}</dd>
+              <dt className="text-xs uppercase tracking-wide text-warm-400 font-bold">Assigned admin ID</dt>
+              <dd className="mt-1 text-base text-warm-900 font-medium">{state.branch.adminUserId ?? 'You'}</dd>
             </div>
           </dl>
         ) : (
-          <p className="mt-3 text-sm text-slate-500">
+          <p className="mt-3 text-sm text-warm-500">
             Branch data could not be loaded. Try refreshing the page.
           </p>
         )}
       </section>
 
       <section className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-800">Staff</h2>
+        <div className="card">
+          <h2 className="section-title">Staff</h2>
           {state.loading ? (
-            <p className="mt-3 text-sm text-slate-500">Loading staff records…</p>
+            <div className="space-y-2">
+              <div className="skeleton h-10 w-full"></div>
+              <div className="skeleton h-10 w-full"></div>
+            </div>
           ) : state.staff.length === 0 ? (
-            <p className="mt-3 text-sm text-slate-500">No staff registered yet.</p>
+            <div className="empty-state py-6">
+              <p className="empty-state-description">No staff registered yet.</p>
+            </div>
           ) : (
-            <ul className="mt-3 space-y-2 text-sm text-slate-600">
+            <ul className="mt-3 space-y-2 text-sm text-warm-600">
               {state.staff.map((member) => (
                 <li
                   key={member.id}
-                  className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2"
+                  className="flex items-center justify-between rounded-lg border border-warm-100 px-3 py-2 hover:bg-warm-50 transition-colors"
                 >
-                  <span>{member.email}</span>
-                  <span className="text-xs uppercase text-slate-400">
+                  <span className="font-medium">{member.email}</span>
+                  <span className="text-xs uppercase text-warm-400 font-bold bg-warm-100 px-2 py-1 rounded">
                     {member.role.replace('ROLE_', '')}
                   </span>
                 </li>
@@ -193,27 +198,32 @@ export default function AdminDashboardPage() {
           )}
         </div>
 
-        <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-800">Tables</h2>
+        <div className="card">
+          <h2 className="section-title">Tables</h2>
           {state.loading ? (
-            <p className="mt-3 text-sm text-slate-500">Loading tables…</p>
+            <div className="space-y-2">
+              <div className="skeleton h-10 w-full"></div>
+              <div className="skeleton h-10 w-full"></div>
+            </div>
           ) : state.tables.length === 0 ? (
-            <p className="mt-3 text-sm text-slate-500">
-              No tables registered. Create tables to start seating guests.
-            </p>
+            <div className="empty-state py-6">
+              <p className="empty-state-description">
+                No tables registered. Create tables to start seating guests.
+              </p>
+            </div>
           ) : (
-            <ul className="mt-3 space-y-2 text-sm text-slate-600">
+            <ul className="mt-3 space-y-2 text-sm text-warm-600">
               {state.tables.map((table) => (
                 <li
                   key={table.id}
-                  className="flex items-center justify-between rounded-lg border border-slate-100 px-3 py-2"
+                  className="flex items-center justify-between rounded-lg border border-warm-100 px-3 py-2 hover:bg-warm-50 transition-colors"
                 >
                   <div>
-                    <p className="font-medium text-slate-800">
+                    <p className="font-medium text-warm-800">
                       Table {table.tableNumber ?? table.id}
                     </p>
-                    <p className="text-xs text-slate-500">
-                      Seats {table.seatCount ?? 'N/A'} • {table.active ? 'Active' : 'Inactive'}
+                    <p className="text-xs text-warm-500">
+                      Seats {table.seatCount ?? 'N/A'} • <span className={table.active ? 'text-green-600 font-medium' : 'text-warm-400'}>{table.active ? 'Active' : 'Inactive'}</span>
                     </p>
                   </div>
                 </li>
@@ -223,22 +233,33 @@ export default function AdminDashboardPage() {
         </div>
       </section>
 
-      <section className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-800">Menu preview</h2>
+      <section className="card">
+        <h2 className="section-title">Menu preview</h2>
         {state.loading ? (
-          <p className="mt-3 text-sm text-slate-500">Loading menu items…</p>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="skeleton h-20 w-full"></div>
+            <div className="skeleton h-20 w-full"></div>
+            <div className="skeleton h-20 w-full"></div>
+          </div>
         ) : state.menu.length === 0 ? (
-          <p className="mt-3 text-sm text-slate-500">
-            No menu items available. Menu changes are managed by the SuperAdmin.
-          </p>
+          <div className="empty-state py-6">
+            <p className="empty-state-description">
+              No menu items available. Menu changes are managed by the SuperAdmin.
+            </p>
+          </div>
         ) : (
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {state.menu.slice(0, 6).map((item) => (
-              <li key={item.id} className="rounded-lg border border-slate-100 px-3 py-2">
-                <p className="text-sm font-semibold text-slate-800">{item.name}</p>
-                <p className="text-xs text-slate-500">
-                  {(item.priceCents ?? 0) / 100} • {item.isAvailable ? 'Available' : 'Unavailable'}
-                </p>
+              <li key={item.id} className="rounded-xl border border-warm-100 px-4 py-3 hover:shadow-sm hover:border-warm-200 transition-all bg-warm-50/50">
+                <p className="text-sm font-semibold text-warm-800">{item.name}</p>
+                <div className="flex justify-between items-center mt-2">
+                  <p className="text-primary-600 font-bold">
+                    ${((item.priceCents ?? 0) / 100).toFixed(2)}
+                  </p>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${item.isAvailable ? 'bg-green-100 text-green-700' : 'bg-warm-200 text-warm-600'}`}>
+                    {item.isAvailable ? 'Available' : 'Unavailable'}
+                  </span>
+                </div>
               </li>
             ))}
           </ul>
@@ -256,10 +277,10 @@ interface StatCardProps {
 
 function StatCard({ label, value, loading }: StatCardProps) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="text-xs uppercase tracking-wide text-slate-400">{label}</p>
-      <p className="mt-2 text-3xl font-bold text-slate-900">
-        {loading ? <span className="text-base font-medium text-slate-400">Loading…</span> : value}
+    <div className="card flex flex-col justify-between h-full">
+      <p className="text-xs uppercase tracking-wide text-warm-400 font-bold">{label}</p>
+      <p className="mt-2 text-3xl font-bold text-warm-900">
+        {loading ? <span className="skeleton h-8 w-16 inline-block"></span> : value}
       </p>
     </div>
   );

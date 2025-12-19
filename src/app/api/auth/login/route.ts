@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { API_BASE_URL } from '@/lib/env';
+import { API_BASE_URL, USE_MOCK_DATA } from '@/lib/env';
 import type { AuthSession, AuthUser } from '@/types/auth';
 import { applyClaimsToUser, buildAuthUser, buildUserFromClaims } from '@/lib/auth';
 import { parseJwt } from '@/lib/token';
@@ -9,6 +9,49 @@ interface LoginPayload {
   email: string;
   password: string;
 }
+
+// Mock authentication data
+const MOCK_USERS: Record<string, { password: string; user: AuthUser; token: string }> = {
+  'superadmin@cozycorner.com': {
+    password: 'admin123',
+    user: {
+      id: 1,
+      email: 'superadmin@cozycorner.com',
+      role: 'ROLE_SUPERADMIN',
+      restaurantId: 1,
+      branchId: null,
+      fullName: 'Cavidan  Mammadov',
+      permissions: [],
+    },
+    token: 'mock-token-superadmin-12345',
+  },
+  'admin@downtown.cozycorner.com': {
+    password: 'admin123',
+    user: {
+      id: 2,
+      email: 'admin@downtown.cozycorner.com',
+      role: 'ROLE_ADMIN',
+      restaurantId: 1,
+      branchId: 1,
+      fullName: 'Leyla Huseynova',
+      permissions: [],
+    },
+    token: 'mock-token-admin-67890',
+  },
+  'kitchen1@cozycorner.com': {
+    password: 'kitchen123',
+    user: {
+      id: 3,
+      email: 'kitchen1@cozycorner.com',
+      role: 'ROLE_KITCHEN',
+      restaurantId: 1,
+      branchId: 1,
+      fullName: 'Rashad Aliyev',
+      permissions: [],
+    },
+    token: 'mock-token-kitchen-11111',
+  },
+};
 
 const cookieOptions = {
   httpOnly: true,
@@ -58,6 +101,40 @@ const extractAuthResponse = (data: any): AuthSession => {
 
 export async function POST(request: Request) {
   const payload: LoginPayload = await request.json();
+  
+  // Mock mode: return fake authentication
+  if (USE_MOCK_DATA) {
+    console.log('[Auth] Mock mode enabled - using mock authentication');
+    const mockAuth = MOCK_USERS[payload.email.toLowerCase()];
+    
+    if (!mockAuth || mockAuth.password !== payload.password) {
+      return NextResponse.json(
+        { message: 'Invalid email or password' },
+        { status: 401 }
+      );
+    }
+    
+    if (mockAuth.user.role === 'ROLE_WAITER') {
+      return NextResponse.json(
+        { message: 'Login restricted for this role' },
+        { status: 403 }
+      );
+    }
+    
+    const session: AuthSession = {
+      token: mockAuth.token,
+      user: mockAuth.user,
+    };
+    
+    const cookieStore = cookies();
+    cookieStore.set('token', session.token, cookieOptions);
+    cookieStore.set('role', session.user.role, { ...cookieOptions, httpOnly: false });
+    
+    console.log('[Auth] Mock login successful for:', payload.email);
+    return NextResponse.json(session);
+  }
+  
+  // Real API mode
   const loginUrl = `${API_BASE_URL}/auth/login`;
 
   console.log('[Auth] Attempting login to:', loginUrl);
@@ -119,7 +196,7 @@ export async function POST(request: Request) {
 
   if (!session.user || !session.token) {
     return NextResponse.json(
-      { message: 'Unable to determine user role' },
+      { message: 'Unable to determine user role or token' },
       { status: 500 }
     );
   }

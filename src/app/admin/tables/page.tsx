@@ -47,6 +47,7 @@ export default function AdminTablesPage() {
     active: true,
   });
   const [saving, setSaving] = useState<boolean>(false);
+  const [qrTable, setQrTable] = useState<TableEntity | null>(null);
 
   const branchId = user?.branchId ?? null;
   const restaurantId = user?.restaurantId ?? null;
@@ -407,6 +408,13 @@ export default function AdminTablesPage() {
                     <div className="flex flex-col gap-2 text-xs font-medium text-slate-600">
                       <button
                         type="button"
+                        onClick={() => setQrTable(table)}
+                        className="inline-flex items-center rounded-lg border border-slate-200 px-3 py-1 text-slate-700 transition hover:bg-slate-50"
+                      >
+                        QR Code
+                      </button>
+                      <button
+                        type="button"
                         onClick={() => startEdit(table)}
                         className="inline-flex items-center rounded-lg border border-blue-200 px-3 py-1 text-blue-600 transition hover:bg-blue-50"
                       >
@@ -427,6 +435,44 @@ export default function AdminTablesPage() {
           </div>
         )}
       </section>
+
+      {qrTable && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+            <div className="text-center">
+              <h3 className="text-lg font-bold text-slate-900">
+                Table {qrTable.tableNumber ?? qrTable.id}
+              </h3>
+              <p className="text-sm text-slate-500 mb-6">Scan to view menu & order</p>
+              
+              <div className="mx-auto bg-white p-4 rounded-xl border border-slate-100 shadow-inner inline-block">
+                 <img 
+                   src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(
+                     `${window.location.origin}/scan?table=${qrTable.id}&branch=${qrTable.branchId}`
+                   )}`}
+                   alt="QR Code"
+                   className="w-64 h-64"
+                 />
+              </div>
+              
+              <div className="mt-6 flex justify-center gap-3">
+                <button
+                  onClick={() => window.print()}
+                  className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                >
+                  Print
+                </button>
+                <button
+                  onClick={() => setQrTable(null)}
+                  className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

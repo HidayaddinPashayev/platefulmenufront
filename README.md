@@ -1,6 +1,6 @@
 # PlateMenu Frontend
 
-A comprehensive React-based frontend application for restaurant management system with role-based access control.
+A comprehensive React-based frontend application for restaurant management system with role-based access control. Features a warm, cozy design system perfect for café and restaurant environments.
 
 ## Features
 
@@ -10,56 +10,188 @@ A comprehensive React-based frontend application for restaurant management syste
 - **API Integration**: Axios with React Query for data fetching
 - **Responsive Design**: Mobile-first for customer pages, desktop-first for admin
 - **Type Safety**: Full TypeScript implementation
+- **Mock Data Mode**: Develop without a backend using realistic fake data
+- **Warm & Cozy Design**: Restaurant-appropriate color palette and styling
+
+---
+
+## Design System
+
+The app uses a **warm, functional design** tailored for restaurant/café environments.
+
+### Color Palette
+
+| Name | Hex | Usage |
+|------|-----|-------|
+| **Primary (Orange)** | `#f97316` | Buttons, links, active states |
+| **Secondary (Green)** | `#22c55e` | Success states, available items |
+| **Warm (Stone)** | `#292524` | Text, borders, backgrounds |
+
+### CSS Utility Classes
+
+Pre-built classes in `globals.css` for rapid development:
+
+#### Cards
+```html
+<div class="card">Basic card with hover effect</div>
+<div class="card-elevated">Card with stronger shadow</div>
+<div class="menu-card">Menu item card with image support</div>
+```
+
+#### Buttons
+```html
+<button class="btn-primary">Primary Action</button>
+<button class="btn-secondary">Secondary Action</button>
+<button class="btn-outline">Outline Button</button>
+<button class="btn-ghost">Ghost Button</button>
+<button class="btn-danger">Danger Action</button>
+<button class="btn-primary btn-sm">Small Button</button>
+<button class="btn-primary btn-lg">Large Button</button>
+```
+
+#### Order Status Badges
+```html
+<span class="badge-ordered">New Order</span>
+<span class="badge-preparing">Preparing</span>
+<span class="badge-ready">Ready</span>
+<span class="badge-served">Served</span>
+<span class="badge-cancelled">Cancelled</span>
+```
+
+#### Form Elements
+```html
+<label class="label">Email</label>
+<input class="input" placeholder="Enter email..." />
+<input class="input-error" /> <!-- For validation errors -->
+<p class="error-text">This field is required</p>
+```
+
+#### Sidebar Navigation
+```html
+<nav class="sidebar">
+  <div class="sidebar-header">Logo</div>
+  <div class="sidebar-nav">
+    <a class="sidebar-item">Dashboard</a>
+    <a class="sidebar-item-active">Orders</a>
+  </div>
+  <div class="sidebar-footer">User Info</div>
+</nav>
+```
+
+---
+
+## Mock Data Mode
+
+Develop the frontend without a running backend by enabling mock data mode.
+
+### Enabling Mock Data
+
+1. Copy the example env file:
+```bash
+cp .env.example .env.local
+```
+
+2. Set the mock data flag:
+```env
+NEXT_PUBLIC_USE_MOCK_DATA=true
+```
+
+3. Restart the dev server:
+```bash
+npm run dev
+```
+
+### Using the Data Provider
+
+The `useDataProvider` hook automatically switches between mock and real API:
+
+```typescript
+import { useDataProvider } from '@/hooks/useDataProvider';
+
+function MyComponent() {
+  const { getMenuAdmin, getKitchenOrders, isUsingMockData } = useDataProvider();
+  
+  useEffect(() => {
+    async function loadData() {
+      const menu = await getMenuAdmin(1);
+      const orders = await getKitchenOrders(1);
+      // Works the same whether using mock or real API!
+    }
+    loadData();
+  }, []);
+  
+  return (
+    <div>
+      {isUsingMockData && <span class="badge-ordered">Mock Mode</span>}
+      {/* ... */}
+    </div>
+  );
+}
+```
+
+### Available Mock Data
+
+Located in `src/data/mock-data.ts`:
+
+- **Restaurant**: "Cozy Corner Café"
+- **Branches**: Downtown Branch, Mall Branch
+- **Menu Items**: 18 items across 5 categories (Appetizers, Main Course, Burgers, Drinks, Desserts)
+- **Tables**: 6 tables with varying seat counts
+- **Staff**: 5 users (SuperAdmin, Admin, Kitchen, 2 Waiters)
+- **Orders**: 5 sample orders in different statuses
+
+### Helper Functions
+
+```typescript
+import { 
+  getMenuByCategory,      // Group menu by category
+  getOrdersByStatus,      // Filter orders by status
+  getActiveKitchenOrders, // Get orders for kitchen display
+  formatPrice,            // Format cents to display (e.g., "12.50 AZN")
+  getStatusBadgeClass,    // Get CSS class for status
+  getStatusLabel,         // Get human-readable status
+} from '@/data/mock-data';
+```
+
+---
 
 ## Project Structure
 
 ```
 src/
-├── api/                    # Axios/React Query wrappers
-│   ├── auth.ts
-│   ├── orders.ts
-│   ├── menu.ts
-│   ├── tables.ts
-│   ├── users.ts
-│   ├── branches.ts
-│   ├── superadmin.ts
-│   └── payments.ts
+├── app/                    # Next.js app router pages
+│   ├── (auth)/             # Authentication pages
+│   ├── admin/              # Admin dashboard
+│   ├── kitchen/            # Kitchen display
+│   ├── superadmin/         # SuperAdmin panel
+│   └── table/              # Customer table view
 │
 ├── components/             # Shared UI components
-│   ├── Button.tsx
-│   ├── Card.tsx
-│   ├── Modal.tsx
-│   ├── Table.tsx
-│   ├── Badge.tsx
-│   ├── Toast.tsx
-│   └── QRScanner.tsx
+│   ├── customer/           # Customer-facing components
+│   └── dashboard/          # Dashboard components
 │
-├── features/               # Feature-based modules
-│   ├── auth/
-│   ├── customer/
-│   ├── kitchen/
-│   ├── waiter/
-│   ├── owner/
-│   └── superadmin/
+├── data/                   # Mock data for development
+│   └── mock-data.ts
 │
 ├── hooks/                  # Custom React hooks
 │   ├── useAuth.ts
-│   ├── useOrders.ts
-│   ├── useMenu.ts
-│   └── useSession.ts
+│   ├── useApi.ts
+│   └── useDataProvider.ts  # Mock/Real API switcher
 │
-├── store/                  # Zustand stores
-│   ├── authStore.ts
-│   ├── sessionStore.ts
-│   ├── orderStore.ts
-│   └── uiStore.ts
+├── lib/                    # Utilities and API clients
+│   ├── api/                # API functions by domain
+│   │   ├── admin.ts
+│   │   ├── customer.ts
+│   │   ├── kitchen.ts
+│   │   └── superadmin.ts
+│   └── env.ts              # Environment configuration
 │
-├── types/                  # TypeScript interfaces
-│   └── index.ts
+├── providers/              # React context providers
+│   └── AuthProvider.tsx
 │
-├── App.tsx
-├── routes.tsx
-└── index.tsx
+└── types/                  # TypeScript interfaces
+    ├── auth.ts
+    └── entities.ts
 ```
 
 ## Getting Started
@@ -67,7 +199,7 @@ src/
 ### Prerequisites
 
 - Node.js 18+ and npm/yarn
-- Backend API running on `http://localhost:8000` (or update proxy in `vite.config.ts`)
+- Backend API running on `http://localhost:8080` (or enable mock data mode)
 
 ### Installation
 
@@ -76,7 +208,13 @@ src/
 npm install
 ```
 
-2. Start development server:
+2. Set up environment:
+```bash
+cp .env.example .env.local
+# Edit .env.local as needed
+```
+
+3. Start development server:
 ```bash
 npm run dev
 ```
@@ -91,93 +229,36 @@ npm run build
 
 ## Configuration
 
-### API Base URL
+### Environment Variables
 
-Update the proxy configuration in `vite.config.ts` if your backend runs on a different port:
-
-```typescript
-server: {
-  proxy: {
-    '/api': {
-      target: 'http://localhost:8000',
-      changeOrigin: true,
-    },
-  },
-}
-```
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `NEXT_PUBLIC_API_URL` | `http://localhost:8080/api` | Backend API URL |
+| `NEXT_PUBLIC_USE_MOCK_DATA` | `false` | Enable mock data mode |
 
 ## Role-Based Routes
 
-- **Customer**: `/menu`, `/cart`, `/checkout`, `/order-status`
-- **Kitchen**: `/kitchen`, `/kitchen/orders/:orderId`
-- **Waiter**: `/waiter`, `/waiter/orders/:orderId`, `/waiter/payment/:orderId`
-- **Admin/Owner**: `/owner`, `/owner/menu`, `/owner/tables`, `/owner/branches`, `/owner/users`
-- **SuperAdmin**: `/superadmin`, `/superadmin/branches`, `/superadmin/users`, `/superadmin/reports`
-
-## State Management
-
-### Auth Store
-- JWT token and user information
-- Persisted in localStorage
-- Role-based access control helpers
-
-### Session Store
-- Active session and table information
-- Persisted in sessionStorage
-
-### Order Store
-- Shopping cart management
-- Current order state
-
-### UI Store
-- Toast notifications
-- Modal state management
-
-## API Integration
-
-All API calls are made through Axios instances in `src/api/`. React Query handles caching, refetching, and error states.
-
-### Example API Call
-
-```typescript
-import { getMenu } from '../api/menu';
-
-const { menu, isLoading } = useMenu(restaurantId, branchId);
-```
-
-## Development
-
-### Adding a New Feature
-
-1. Create feature folder in `src/features/`
-2. Add API wrappers in `src/api/`
-3. Create custom hooks in `src/hooks/` if needed
-4. Add routes in `src/routes.tsx` with appropriate role guards
-
-### Styling
-
-The project uses Tailwind CSS. Utility classes are used throughout components.
-
-## Testing Backend Connectivity
-
-Use Postman or similar tools to test backend endpoints before integrating with the frontend. Ensure:
-
-1. Backend is running on the configured port
-2. CORS is properly configured
-3. Authentication endpoints return JWT tokens
-4. All required endpoints are available
+- **Customer**: `/table/[tableId]` - QR code scanned menu
+- **Kitchen**: `/kitchen/[branchId]` - Kitchen display system
+- **Admin**: `/admin/*` - Branch management
+- **SuperAdmin**: `/superadmin/*` - Restaurant-wide management
 
 ## Troubleshooting
+
+### Styling Not Applying
+- Ensure Tailwind is properly configured in `tailwind.config.js`
+- Check that `globals.css` is imported in your root layout
+- Clear `.next` cache: `rm -rf .next && npm run dev`
+
+### Mock Data Not Loading
+- Verify `NEXT_PUBLIC_USE_MOCK_DATA=true` in `.env.local`
+- Restart the dev server after changing env variables
+- Check browser console for import errors
 
 ### Authentication Issues
 - Check localStorage for `auth-storage` key
 - Verify JWT token format
 - Ensure backend returns proper auth response
-
-### API Connection Issues
-- Verify backend is running
-- Check proxy configuration in `vite.config.ts`
-- Review browser console for CORS errors
 
 ### Build Issues
 - Clear `node_modules` and reinstall: `rm -rf node_modules && npm install`
