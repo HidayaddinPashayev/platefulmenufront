@@ -1,5 +1,7 @@
 /**
  * Mock Data for Development
+ * admin@downtown.cozycorner.com
+ * admin123
  * 
  * This file contains realistic mock data for development without a backend.
  * To enable mock data, set NEXT_PUBLIC_USE_MOCK_DATA=true in your .env.local file.
