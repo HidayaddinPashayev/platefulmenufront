@@ -6,8 +6,11 @@ export const API_BASE_URL =
 /**
  * Enable mock data mode for development without a backend.
  * Set NEXT_PUBLIC_USE_MOCK_DATA=true in .env.local to enable.
+ * Defaults to true in production if not explicitly set.
  */
-export const USE_MOCK_DATA = process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true';
+export const USE_MOCK_DATA = 
+  process.env.NEXT_PUBLIC_USE_MOCK_DATA === 'true' || 
+  (process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_USE_MOCK_DATA !== 'false');
 
 import type { UserRole } from '@/types/auth';
 import { rolePathMap } from './roles';

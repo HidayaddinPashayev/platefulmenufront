@@ -212,3 +212,9 @@ export async function POST(request: Request) {
   return NextResponse.json(session);
 }
 
+export async function GET() {
+  return NextResponse.json(
+    { message: 'Method Not Allowed. Use POST to login.' },
+    { status: 405 }
+  );
+}
