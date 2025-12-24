@@ -20,7 +20,6 @@ const MOCK_USERS: Record<string, { password: string; user: AuthUser; token: stri
       role: 'ROLE_SUPERADMIN',
       restaurantId: 1,
       branchId: null,
-      fullName: 'Cavidan  Mammadov',
       permissions: [],
     },
     token: 'mock-token-superadmin-12345',
@@ -33,7 +32,6 @@ const MOCK_USERS: Record<string, { password: string; user: AuthUser; token: stri
       role: 'ROLE_ADMIN',
       restaurantId: 1,
       branchId: 1,
-      fullName: 'Leyla Huseynova',
       permissions: [],
     },
     token: 'mock-token-admin-67890',
@@ -46,7 +44,6 @@ const MOCK_USERS: Record<string, { password: string; user: AuthUser; token: stri
       role: 'ROLE_KITCHEN',
       restaurantId: 1,
       branchId: 1,
-      fullName: 'Rashad Aliyev',
       permissions: [],
     },
     token: 'mock-token-kitchen-11111',
@@ -127,8 +124,8 @@ export async function POST(request: Request) {
     };
     
     const cookieStore = cookies();
-    cookieStore.set('token', session.token, cookieOptions);
-    cookieStore.set('role', session.user.role, { ...cookieOptions, httpOnly: false });
+    cookieStore.set('token', session.token || '', cookieOptions);
+    cookieStore.set('role', session.user?.role || '', { ...cookieOptions, httpOnly: false });
     
     console.log('[Auth] Mock login successful for:', payload.email);
     return NextResponse.json(session);

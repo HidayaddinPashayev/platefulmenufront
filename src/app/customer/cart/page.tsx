@@ -58,7 +58,7 @@ export default function CartPage() {
           🛒
         </div>
         <h2 className="text-xl font-bold text-warm-900">Your basket is empty</h2>
-        <p className="text-warm-500 mt-2 mb-6">Looks like you haven't added anything yet.</p>
+        <p className="text-warm-500 mt-2 mb-6">Looks like you haven&apos;t added anything yet.</p>
         <button 
           onClick={() => router.back()}
           className="btn btn-primary"

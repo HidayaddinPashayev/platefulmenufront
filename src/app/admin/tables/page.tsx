@@ -115,7 +115,6 @@ export default function AdminTablesPage() {
         name: createForm.name.trim() || `Table ${Date.now()}`,
         seatCount,
         tableNumber,
-        active: createForm.active,
       });
       setCreateForm(INITIAL_CREATE_FORM);
       await refreshTables();

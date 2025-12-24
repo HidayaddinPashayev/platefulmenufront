@@ -12,10 +12,6 @@ type OrdersByStatus = {
 };
 
 export default function KitchenOrdersPage() {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
   const params = useParams();
   const router = useRouter();
   const branchId = Number(params.branchId);

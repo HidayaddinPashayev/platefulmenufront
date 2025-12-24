@@ -3,10 +3,6 @@
 import { useState, useEffect } from 'react';
 
 export default function KitchenLayout({ children }: { children: React.ReactNode }) {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {

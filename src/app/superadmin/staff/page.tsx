@@ -249,7 +249,7 @@ export default function SuperadminStaffPage() {
 
     try {
       // Map staff type to backend role
-      const role = form.staffType === 'Waiter' ? 'ROLE_WAITER' : 'ROLE_KITCHEN';
+      const role: 'ROLE_KITCHEN' | 'ROLE_WAITER' = form.staffType === 'Waiter' ? 'ROLE_WAITER' : 'ROLE_KITCHEN';
       
       // Convert salary cycle to uppercase
       const salaryPeriod = form.salaryCycle.toUpperCase() as 'DAILY' | 'WEEKLY' | 'MONTHLY';
@@ -347,7 +347,7 @@ export default function SuperadminStaffPage() {
 
     try {
       // Map staff type to backend role
-      const role = editForm.staffType === 'Waiter' ? 'ROLE_WAITER' : 'ROLE_KITCHEN';
+      const role: 'ROLE_KITCHEN' | 'ROLE_WAITER' = editForm.staffType === 'Waiter' ? 'ROLE_WAITER' : 'ROLE_KITCHEN';
       
       // Convert salary cycle to uppercase
       const salaryPeriod = editForm.salaryCycle.toUpperCase() as 'DAILY' | 'WEEKLY' | 'MONTHLY';
@@ -436,7 +436,7 @@ export default function SuperadminStaffPage() {
           </div>
         ) : staff.length === 0 ? (
           <div className="px-6 py-8 text-center text-sm text-slate-500">
-            No staff members found. Click "Add staff" to add your first staff member.
+            No staff members found. Click &quot;Add staff&quot; to add your first staff member.
           </div>
         ) : (
           <table className="min-w-full divide-y divide-slate-200 text-sm">

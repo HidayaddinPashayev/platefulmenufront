@@ -5,10 +5,6 @@ import { useParams, useRouter } from 'next/navigation';
 import { API_BASE_URL } from '@/lib/env';
 
 export default function KitchenPinPage() {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
   const params = useParams();
   const router = useRouter();
   const branchId = Number(params.branchId);

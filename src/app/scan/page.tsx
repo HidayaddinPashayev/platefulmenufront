@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, Suspense } from 'react';
+import { useEffect, useRef, useState, Suspense, useCallback } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { startCustomerSession } from '@/lib/api/customer';
@@ -13,6 +13,66 @@ function ScanContent() {
   const [processing, setProcessing] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
 
+  const handleSessionStart = useCallback(async (branchId: number, tableId: number) => {
+    setProcessing(true);
+    try {
+      // Start session
+      const session = await startCustomerSession(branchId, tableId);
+      
+      // Store session info
+      localStorage.setItem('customerSession', JSON.stringify(session));
+      localStorage.setItem('customerBranchId', String(branchId));
+      localStorage.setItem('customerTableId', String(tableId));
+
+      // Redirect
+      router.push('/customer/menu');
+    } catch (err) {
+      console.error('Session start error', err);
+      setError('Failed to start session. Please try scanning again.');
+      setProcessing(false);
+      setScanning(true);
+    }
+  }, [router]);
+
+  const handleScan = useCallback(async (text: string) => {
+    if (!scannerRef.current) return;
+    
+    // Stop scanning immediately
+    await scannerRef.current.stop();
+    setScanning(false);
+
+    // Parse QR code
+    // Expected formats:
+    // 1. URL: http://.../scan?table=1&branch=1
+    // 2. Text: "table:1;branch:1"
+    
+    let tableId = 1;
+    let branchId = 1;
+
+    try {
+      if (text.includes('table=') && text.includes('branch=')) {
+        // It's a URL
+        const url = new URL(text);
+        tableId = Number(url.searchParams.get('table'));
+        branchId = Number(url.searchParams.get('branch'));
+      } else if (text.includes('table:')) {
+        // It's our custom format
+        const parts = text.split(';');
+        const tablePart = parts.find(p => p.includes('table:'));
+        const branchPart = parts.find(p => p.includes('branch:'));
+        
+        if (tablePart) tableId = parseInt(tablePart.split(':')[1]);
+        if (branchPart) branchId = parseInt(branchPart.split(':')[1]);
+      }
+      
+      await handleSessionStart(branchId, tableId);
+    } catch (err) {
+      console.error('Scan parse error', err);
+      setError('Invalid QR code format.');
+      setScanning(true); // Restart scanning
+    }
+  }, [handleSessionStart]);
+
   // Check for URL params on mount
   useEffect(() => {
     const tableParam = searchParams.get('table');
@@ -22,7 +82,7 @@ function ScanContent() {
       setScanning(false);
       handleSessionStart(Number(branchParam), Number(tableParam));
     }
-  }, [searchParams]);
+  }, [searchParams, handleSessionStart]);
 
   useEffect(() => {
     // Only start scanner if we are in scanning mode and not processing
@@ -61,67 +121,7 @@ function ScanContent() {
         scannerRef.current.stop().catch(console.error);
       }
     };
-  }, [scanning, processing]);
-
-  const handleSessionStart = async (branchId: number, tableId: number) => {
-    setProcessing(true);
-    try {
-      // Start session
-      const session = await startCustomerSession(branchId, tableId);
-      
-      // Store session info
-      localStorage.setItem('customerSession', JSON.stringify(session));
-      localStorage.setItem('customerBranchId', String(branchId));
-      localStorage.setItem('customerTableId', String(tableId));
-
-      // Redirect
-      router.push('/customer/menu');
-    } catch (err) {
-      console.error('Session start error', err);
-      setError('Failed to start session. Please try scanning again.');
-      setProcessing(false);
-      setScanning(true);
-    }
-  };
-
-  const handleScan = async (text: string) => {
-    if (!scannerRef.current) return;
-    
-    // Stop scanning immediately
-    await scannerRef.current.stop();
-    setScanning(false);
-
-    // Parse QR code
-    // Expected formats:
-    // 1. URL: http://.../scan?table=1&branch=1
-    // 2. Text: "table:1;branch:1"
-    
-    let tableId = 1;
-    let branchId = 1;
-
-    try {
-      if (text.includes('table=') && text.includes('branch=')) {
-        // It's a URL
-        const url = new URL(text);
-        tableId = Number(url.searchParams.get('table'));
-        branchId = Number(url.searchParams.get('branch'));
-      } else if (text.includes('table:')) {
-        // It's our custom format
-        const parts = text.split(';');
-        const tablePart = parts.find(p => p.includes('table:'));
-        const branchPart = parts.find(p => p.includes('branch:'));
-        
-        if (tablePart) tableId = parseInt(tablePart.split(':')[1]);
-        if (branchPart) branchId = parseInt(branchPart.split(':')[1]);
-      }
-      
-      await handleSessionStart(branchId, tableId);
-    } catch (err) {
-      console.error('Scan parse error', err);
-      setError('Invalid QR code format.');
-      setScanning(true); // Restart scanning
-    }
-  };
+  }, [scanning, processing, handleScan]);
 
   const handleSimulate = () => {
     handleSessionStart(1, 1);

@@ -134,6 +134,7 @@ export const createCustomerOrder = async (
     console.log('[Mock] createCustomerOrder');
     const newOrder: Order = {
       id: Math.floor(Math.random() * 10000) + 1000,
+      restaurantId: MOCK_RESTAURANT.id,
       branchId: payload.branchId,
       tableId: payload.tableId,
       status: 'ORDERED',
@@ -142,14 +143,14 @@ export const createCustomerOrder = async (
         return {
           id: index + 1,
           menuItemId: item.menuItemId,
-          name: menuItem?.name || 'Unknown Item',
+          menuItemName: menuItem?.name || 'Unknown Item',
           qty: item.qty,
-          price: menuItem?.price || 0,
+          priceCents: menuItem?.priceCents || 0,
         };
       }),
-      totalPrice: payload.items.reduce((sum, item) => {
+      totalCents: payload.items.reduce((sum, item) => {
         const menuItem = MOCK_MENU_ITEMS.find(m => m.id === item.menuItemId);
-        return sum + (menuItem?.price || 0) * item.qty;
+        return sum + (menuItem?.priceCents || 0) * item.qty;
       }, 0),
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
