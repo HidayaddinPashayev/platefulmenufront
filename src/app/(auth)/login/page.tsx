@@ -38,7 +38,7 @@ export default function LoginPage() {
     <main className="flex min-h-screen items-center justify-center bg-warm-50 px-4">
       <div className="w-full max-w-md card-elevated">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-warm-900 mb-2">Cozy Corner</h1>
+          <h1 className="text-3xl font-bold text-warm-900 mb-2">Plateful</h1>
           <p className="text-warm-500">
             Sign in to manage your restaurant
           </p>

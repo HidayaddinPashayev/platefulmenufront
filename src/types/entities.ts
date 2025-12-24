@@ -37,6 +37,7 @@ export interface MenuItem {
   priceCents: number;
   category?: string | null;
   isAvailable: boolean;
+  image?: string | null;
 }
 
 export interface TableEntity {

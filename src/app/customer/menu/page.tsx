@@ -75,10 +75,17 @@ export default function MenuPage() {
         {filteredMenu.map((item) => (
           <div key={item.id} className="menu-card group">
             <div className="menu-card-image relative">
-              {/* Placeholder image since we don't have real URLs yet */}
-              <div className="absolute inset-0 flex items-center justify-center text-warm-300 bg-warm-100">
-                <span className="text-2xl">🍽️</span>
-              </div>
+              {item.image ? (
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center text-warm-300 bg-warm-100">
+                  <span className="text-2xl">🍽️</span>
+                </div>
+              )}
             </div>
             <div className="menu-card-body">
               <h3 className="menu-card-title text-sm md:text-base">{item.name}</h3>

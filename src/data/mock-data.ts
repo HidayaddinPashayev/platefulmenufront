@@ -110,174 +110,100 @@ export const MOCK_MENU_ITEMS: MenuItem[] = [
   {
     id: 1,
     restaurantId: 1,
-    name: 'Hummus with Pita',
+    name: 'French fries',
     description: 'Creamy homemade hummus served with warm pita bread and olive oil drizzle',
     priceCents: 890,
     category: 'Appetizers',
     isAvailable: true,
-    // image: 'https://images.unsplash.com/photo-1637949385162-e416fb820e9a?w=400&h=300&fit=crop'
+    image: '/imgs/fries.jpg',
   },
+ 
+
   {
     id: 2,
-    restaurantId: 1,
-    name: 'Bruschetta',
-    description: 'Toasted bread topped with fresh tomatoes, basil, garlic, and balsamic glaze',
-    priceCents: 750,
-    category: 'Appetizers',
-    isAvailable: true,
-  },
-  {
-    id: 3,
-    restaurantId: 1,
-    name: 'Soup of the Day',
-    description: 'Chef\'s daily special soup served with crusty bread',
-    priceCents: 650,
-    category: 'Appetizers',
-    isAvailable: true,
-  },
-  {
-    id: 4,
     restaurantId: 1,
     name: 'Caesar Salad',
     description: 'Crisp romaine lettuce, parmesan, croutons, and house-made Caesar dressing',
     priceCents: 1100,
     category: 'Appetizers',
     isAvailable: true,
+    image: '/imgs/salad.jpg',
   },
 
   // Main Courses
   {
-    id: 5,
+    id: 3,
     restaurantId: 1,
-    name: 'Grilled Salmon',
+    name: 'Grilled Salmon(Sushi)',
     description: 'Fresh Atlantic salmon with lemon butter sauce, served with seasonal vegetables',
     priceCents: 2450,
     category: 'Main Course',
     isAvailable: true,
+    image: '/imgs/sushi.jpg',
   },
+  
   {
-    id: 6,
-    restaurantId: 1,
-    name: 'Beef Steak',
-    description: '250g premium beef steak cooked to your preference, with mashed potatoes',
-    priceCents: 2990,
-    category: 'Main Course',
-    isAvailable: true,
-  },
-  {
-    id: 7,
-    restaurantId: 1,
-    name: 'Chicken Alfredo Pasta',
-    description: 'Creamy fettuccine pasta with grilled chicken breast and parmesan',
-    priceCents: 1650,
-    category: 'Main Course',
-    isAvailable: true,
-  },
-  {
-    id: 8,
+    id: 4,
     restaurantId: 1,
     name: 'Vegetable Risotto',
     description: 'Creamy arborio rice with seasonal vegetables and parmesan',
     priceCents: 1450,
     category: 'Main Course',
     isAvailable: true,
+    image: '/imgs/salad.jpg',
   },
   {
-    id: 9,
+    id: 5,
     restaurantId: 1,
-    name: 'Lamb Chops',
+    name: 'Chicken',
     description: 'Herb-crusted lamb chops with rosemary jus and roasted potatoes',
     priceCents: 3250,
     category: 'Main Course',
-    isAvailable: false, // Sold out example
+    isAvailable: false,
+    image: '/imgs/chicken.jpg',
   },
 
   // Burgers & Sandwiches
   {
-    id: 10,
+    id: 6,
     restaurantId: 1,
     name: 'Classic Burger',
     description: 'Angus beef patty with lettuce, tomato, cheese, and special sauce',
     priceCents: 1450,
     category: 'Burgers',
     isAvailable: true,
+    image: '/imgs/hamburger.jpg',
   },
-  {
-    id: 11,
-    restaurantId: 1,
-    name: 'Chicken Club Sandwich',
-    description: 'Grilled chicken, bacon, avocado, lettuce, and mayo on toasted bread',
-    priceCents: 1250,
-    category: 'Burgers',
-    isAvailable: true,
-  },
+ 
 
   // Drinks
+ 
+ 
+ 
   {
-    id: 12,
+    id: 7,
     restaurantId: 1,
-    name: 'Fresh Orange Juice',
-    description: 'Freshly squeezed orange juice',
-    priceCents: 450,
-    category: 'Drinks',
-    isAvailable: true,
-  },
-  {
-    id: 13,
-    restaurantId: 1,
-    name: 'Cappuccino',
-    description: 'Double espresso with steamed milk and foam',
-    priceCents: 550,
-    category: 'Drinks',
-    isAvailable: true,
-  },
-  {
-    id: 14,
-    restaurantId: 1,
-    name: 'Iced Latte',
-    description: 'Cold espresso with milk over ice',
-    priceCents: 600,
-    category: 'Drinks',
-    isAvailable: true,
-  },
-  {
-    id: 15,
-    restaurantId: 1,
-    name: 'Lemonade',
+    name: 'Coffee',
     description: 'House-made fresh lemonade with mint',
     priceCents: 400,
     category: 'Drinks',
     isAvailable: true,
+    image: '/imgs/coffee.jpg',
   },
 
   // Desserts
   {
-    id: 16,
+    id: 8,
     restaurantId: 1,
     name: 'Chocolate Lava Cake',
     description: 'Warm chocolate cake with molten center, served with vanilla ice cream',
     priceCents: 850,
     category: 'Desserts',
     isAvailable: true,
+    image: '/imgs/cake.jpg',
   },
-  {
-    id: 17,
-    restaurantId: 1,
-    name: 'Tiramisu',
-    description: 'Classic Italian dessert with espresso-soaked ladyfingers and mascarpone',
-    priceCents: 750,
-    category: 'Desserts',
-    isAvailable: true,
-  },
-  {
-    id: 18,
-    restaurantId: 1,
-    name: 'Cheesecake',
-    description: 'New York style cheesecake with berry compote',
-    priceCents: 800,
-    category: 'Desserts',
-    isAvailable: true,
-  },
+ 
+
 ];
 
 // Helper to get menu item images (separate from entities for flexibility)
